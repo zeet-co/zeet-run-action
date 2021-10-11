@@ -293,6 +293,7 @@ export type ContainerStatus = {
 };
 
 export type CreateApiKeyInput = {
+  userID: Scalars['UUID'];
   name: Scalars['String'];
 };
 
@@ -2030,18 +2031,27 @@ export type Web3Challenge = {
   nonce: Scalars['String'];
 };
 
-export type JobResultFragment = { __typename?: 'JobRun', id: any };
+export type JobResultFragment = { __typename?: 'JobRun', id: any, state: JobRunState };
 
 export type RunJobMutationVariables = Exact<{
   input: RunJobInput;
 }>;
 
 
-export type RunJobMutation = { __typename?: 'Mutation', runJob: { __typename?: 'JobRun', id: any } };
+export type RunJobMutation = { __typename?: 'Mutation', runJob: { __typename?: 'JobRun', id: any, state: JobRunState } };
+
+export type GetJobQueryVariables = Exact<{
+  repo: Scalars['ID'];
+  job: Scalars['UUID'];
+}>;
+
+
+export type GetJobQuery = { __typename?: 'Query', currentUser: { __typename?: 'User', id: string, repo?: Maybe<{ __typename?: 'Repo', id: string, jobRun: { __typename?: 'JobRun', id: any, state: JobRunState } }> } };
 
 export const JobResultFragmentDoc = gql`
     fragment JobResult on JobRun {
   id
+  state
 }
     `;
 export const RunJobDocument = gql`
@@ -2049,6 +2059,20 @@ export const RunJobDocument = gql`
   runJob(input: $input) {
     id
     ...JobResult
+  }
+}
+    ${JobResultFragmentDoc}`;
+export const GetJobDocument = gql`
+    query GetJob($repo: ID!, $job: UUID!) {
+  currentUser {
+    id
+    repo(id: $repo) {
+      id
+      jobRun(id: $job) {
+        id
+        ...JobResult
+      }
+    }
   }
 }
     ${JobResultFragmentDoc}`;
@@ -2062,6 +2086,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
   return {
     RunJob(variables: RunJobMutationVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<RunJobMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<RunJobMutation>(RunJobDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'RunJob');
+    },
+    GetJob(variables: GetJobQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetJobQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetJobQuery>(GetJobDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'GetJob');
     }
   };
 }

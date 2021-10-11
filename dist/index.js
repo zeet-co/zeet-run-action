@@ -10,7 +10,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getSdk = exports.RunJobDocument = exports.JobResultFragmentDoc = exports.UserAction = exports.TeamMemberRole = exports.StripeSubscriptionStatus = exports.RepoSourceType = exports.ProjectCollaboratorRole = exports.PortProtocol = exports.PlanTier = exports.PlanBillingPeriod = exports.LogShipperType = exports.JobRunState = exports.IntegrationType = exports.GithubUserType = exports.GitProvider = exports.GcpAccountState = exports.ErrorCode = exports.DisableReason = exports.DeploymentStatus = exports.DeployTarget = exports.DeployStrategy = exports.ClusterState = exports.ClusterProvider = exports.CloudProvider = exports.BuildType = exports.BuildState = exports.AwsAccountState = void 0;
+exports.getSdk = exports.GetJobDocument = exports.RunJobDocument = exports.JobResultFragmentDoc = exports.UserAction = exports.TeamMemberRole = exports.StripeSubscriptionStatus = exports.RepoSourceType = exports.ProjectCollaboratorRole = exports.PortProtocol = exports.PlanTier = exports.PlanBillingPeriod = exports.LogShipperType = exports.JobRunState = exports.IntegrationType = exports.GithubUserType = exports.GitProvider = exports.GcpAccountState = exports.ErrorCode = exports.DisableReason = exports.DeploymentStatus = exports.DeployTarget = exports.DeployStrategy = exports.ClusterState = exports.ClusterProvider = exports.CloudProvider = exports.BuildType = exports.BuildState = exports.AwsAccountState = void 0;
 const graphql_tag_1 = __importDefault(__nccwpck_require__(8435));
 var AwsAccountState;
 (function (AwsAccountState) {
@@ -195,6 +195,7 @@ var UserAction;
 exports.JobResultFragmentDoc = graphql_tag_1.default `
     fragment JobResult on JobRun {
   id
+  state
 }
     `;
 exports.RunJobDocument = graphql_tag_1.default `
@@ -205,11 +206,28 @@ exports.RunJobDocument = graphql_tag_1.default `
   }
 }
     ${exports.JobResultFragmentDoc}`;
+exports.GetJobDocument = graphql_tag_1.default `
+    query GetJob($repo: ID!, $job: UUID!) {
+  currentUser {
+    id
+    repo(id: $repo) {
+      id
+      jobRun(id: $job) {
+        id
+        ...JobResult
+      }
+    }
+  }
+}
+    ${exports.JobResultFragmentDoc}`;
 const defaultWrapper = (action, _operationName) => action();
 function getSdk(client, withWrapper = defaultWrapper) {
     return {
         RunJob(variables, requestHeaders) {
             return withWrapper((wrappedRequestHeaders) => client.request(exports.RunJobDocument, variables, Object.assign(Object.assign({}, requestHeaders), wrappedRequestHeaders)), 'RunJob');
+        },
+        GetJob(variables, requestHeaders) {
+            return withWrapper((wrappedRequestHeaders) => client.request(exports.GetJobDocument, variables, Object.assign(Object.assign({}, requestHeaders), wrappedRequestHeaders)), 'GetJob');
         }
     };
 }
@@ -278,7 +296,7 @@ const core = __importStar(__nccwpck_require__(2186));
 const graphql_request_1 = __nccwpck_require__(2476);
 const graphql_1 = __nccwpck_require__(9088);
 function run() {
-    var _a;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const endpoint = core.getInput('api_url') || 'https://anchor.zeet.co/graphql';
@@ -286,13 +304,14 @@ function run() {
             const projectId = core.getInput('project_id');
             const command = core.getInput('command');
             const build = core.getBooleanInput('build');
+            const wait = core.getBooleanInput('wait');
             const graphQLClient = new graphql_request_1.GraphQLClient(endpoint, {
                 headers: {
                     authorization: `Bearer ${token}`
                 }
             });
             const sdk = graphql_1.getSdk(graphQLClient);
-            const result = yield sdk.RunJob({
+            const job = yield sdk.RunJob({
                 input: {
                     id: projectId,
                     runCommand: command,
@@ -300,9 +319,31 @@ function run() {
                 }
             });
             core.info(`${projectId} job run triggered!`);
-            const link = `https://zeet.co/repo/${projectId}/jobs/${(_a = result === null || result === void 0 ? void 0 : result.runJob) === null || _a === void 0 ? void 0 : _a.id}`;
+            const link = `https://zeet.co/repo/${projectId}/jobs/${(_a = job === null || job === void 0 ? void 0 : job.runJob) === null || _a === void 0 ? void 0 : _a.id}`;
             core.info(`Zeet Dashboard: ${link}`);
             core.setOutput('link', link);
+            if (wait) {
+                let done = false;
+                while (!done) {
+                    const result = yield sdk.GetJob({
+                        repo: projectId,
+                        job: (_b = job === null || job === void 0 ? void 0 : job.runJob) === null || _b === void 0 ? void 0 : _b.id
+                    });
+                    if (((_e = (_d = (_c = result.currentUser) === null || _c === void 0 ? void 0 : _c.repo) === null || _d === void 0 ? void 0 : _d.jobRun) === null || _e === void 0 ? void 0 : _e.state) === graphql_1.JobRunState.JobRunRunning) {
+                        core.info('job executing...');
+                    }
+                    else if (((_h = (_g = (_f = result.currentUser) === null || _f === void 0 ? void 0 : _f.repo) === null || _g === void 0 ? void 0 : _g.jobRun) === null || _h === void 0 ? void 0 : _h.state) ===
+                        graphql_1.JobRunState.JobRunSucceeded) {
+                        core.info('job succeeded');
+                        done = true;
+                    }
+                    else if (((_l = (_k = (_j = result.currentUser) === null || _j === void 0 ? void 0 : _j.repo) === null || _k === void 0 ? void 0 : _k.jobRun) === null || _l === void 0 ? void 0 : _l.state) === graphql_1.JobRunState.JobRunFailed) {
+                        core.info('job failed, check Zeet dashboard for more info');
+                        core.setFailed('job failed, check Zeet dashboard for more info');
+                        done = true;
+                    }
+                }
+            }
             core.debug(new Date().toTimeString());
         }
         catch (error) {

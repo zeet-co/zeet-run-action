@@ -4,6 +4,7 @@ declare module '*/mutation.gql' {
   const defaultDocument: DocumentNode;
   export const JobResult: DocumentNode;
 export const RunJob: DocumentNode;
+export const GetJob: DocumentNode;
 
   export default defaultDocument;
 }

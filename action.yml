@@ -17,6 +17,9 @@ inputs:
   build:
     description: "Trigger build or use latest image"
     required: false
+  wait:
+    description: "Wait till the run finishes"
+    required: false
 outputs:
   link:
     description: "Link to job execution"
