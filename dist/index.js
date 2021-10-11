@@ -10,7 +10,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getSdk = exports.UpdateProjectDocument = exports.UserAction = exports.TeamMemberRole = exports.StripeSubscriptionStatus = exports.RepoSourceType = exports.ProjectCollaboratorRole = exports.PortProtocol = exports.PlanTier = exports.PlanBillingPeriod = exports.LogShipperType = exports.IntegrationType = exports.GithubUserType = exports.GitProvider = exports.GcpAccountState = exports.ErrorCode = exports.DisableReason = exports.DeploymentStatus = exports.DeployTarget = exports.DeployStrategy = exports.ClusterState = exports.ClusterProvider = exports.CloudProvider = exports.BuildType = exports.BuildState = exports.AwsAccountState = void 0;
+exports.getSdk = exports.RunJobDocument = exports.JobResultFragmentDoc = exports.UserAction = exports.TeamMemberRole = exports.StripeSubscriptionStatus = exports.RepoSourceType = exports.ProjectCollaboratorRole = exports.PortProtocol = exports.PlanTier = exports.PlanBillingPeriod = exports.LogShipperType = exports.JobRunState = exports.IntegrationType = exports.GithubUserType = exports.GitProvider = exports.GcpAccountState = exports.ErrorCode = exports.DisableReason = exports.DeploymentStatus = exports.DeployTarget = exports.DeployStrategy = exports.ClusterState = exports.ClusterProvider = exports.CloudProvider = exports.BuildType = exports.BuildState = exports.AwsAccountState = void 0;
 const graphql_tag_1 = __importDefault(__nccwpck_require__(8435));
 var AwsAccountState;
 (function (AwsAccountState) {
@@ -20,9 +20,10 @@ var AwsAccountState;
 })(AwsAccountState = exports.AwsAccountState || (exports.AwsAccountState = {}));
 var BuildState;
 (function (BuildState) {
-    BuildState["BuildPending"] = "BUILD_PENDING";
+    BuildState["BuildStarting"] = "BUILD_STARTING";
     BuildState["BuildInProgress"] = "BUILD_IN_PROGRESS";
     BuildState["BuildFailed"] = "BUILD_FAILED";
+    BuildState["BuildSucceeded"] = "BUILD_SUCCEEDED";
 })(BuildState = exports.BuildState || (exports.BuildState = {}));
 var BuildType;
 (function (BuildType) {
@@ -74,6 +75,7 @@ var DeploymentStatus;
     DeploymentStatus["BuildPending"] = "BUILD_PENDING";
     DeploymentStatus["BuildInProgress"] = "BUILD_IN_PROGRESS";
     DeploymentStatus["BuildFailed"] = "BUILD_FAILED";
+    DeploymentStatus["BuildSucceeded"] = "BUILD_SUCCEEDED";
     DeploymentStatus["DeployInProgress"] = "DEPLOY_IN_PROGRESS";
     DeploymentStatus["DeployFailed"] = "DEPLOY_FAILED";
     DeploymentStatus["DeploySucceeded"] = "DEPLOY_SUCCEEDED";
@@ -122,7 +124,15 @@ var IntegrationType;
     IntegrationType["SlackWebhook"] = "SLACK_WEBHOOK";
     IntegrationType["Discord"] = "DISCORD";
     IntegrationType["DiscordWebhook"] = "DISCORD_WEBHOOK";
+    IntegrationType["Datadog"] = "DATADOG";
 })(IntegrationType = exports.IntegrationType || (exports.IntegrationType = {}));
+var JobRunState;
+(function (JobRunState) {
+    JobRunState["JobRunStarting"] = "JOB_RUN_STARTING";
+    JobRunState["JobRunRunning"] = "JOB_RUN_RUNNING";
+    JobRunState["JobRunFailed"] = "JOB_RUN_FAILED";
+    JobRunState["JobRunSucceeded"] = "JOB_RUN_SUCCEEDED";
+})(JobRunState = exports.JobRunState || (exports.JobRunState = {}));
 var LogShipperType;
 (function (LogShipperType) {
     LogShipperType["Logzio"] = "LOGZIO";
@@ -159,6 +169,7 @@ var RepoSourceType;
     RepoSourceType["Git"] = "GIT";
     RepoSourceType["Docker"] = "DOCKER";
     RepoSourceType["DockerHub"] = "DOCKER_HUB";
+    RepoSourceType["Helm"] = "HELM";
 })(RepoSourceType = exports.RepoSourceType || (exports.RepoSourceType = {}));
 var StripeSubscriptionStatus;
 (function (StripeSubscriptionStatus) {
@@ -181,21 +192,24 @@ var UserAction;
     UserAction["ReadPrivate"] = "READ_PRIVATE";
     UserAction["EditBilling"] = "EDIT_BILLING";
 })(UserAction = exports.UserAction || (exports.UserAction = {}));
-exports.UpdateProjectDocument = graphql_tag_1.default `
-    mutation UpdateProject($input: UpdateProjectInput!) {
-  updateProject(input: $input) {
-    id
-    productionDeployment {
-      id
-    }
-  }
+exports.JobResultFragmentDoc = graphql_tag_1.default `
+    fragment JobResult on JobRun {
+  id
 }
     `;
+exports.RunJobDocument = graphql_tag_1.default `
+    mutation RunJob($input: RunJobInput!) {
+  runJob(input: $input) {
+    id
+    ...JobResult
+  }
+}
+    ${exports.JobResultFragmentDoc}`;
 const defaultWrapper = (action, _operationName) => action();
 function getSdk(client, withWrapper = defaultWrapper) {
     return {
-        UpdateProject(variables, requestHeaders) {
-            return withWrapper((wrappedRequestHeaders) => client.request(exports.UpdateProjectDocument, variables, Object.assign(Object.assign({}, requestHeaders), wrappedRequestHeaders)), 'UpdateProject');
+        RunJob(variables, requestHeaders) {
+            return withWrapper((wrappedRequestHeaders) => client.request(exports.RunJobDocument, variables, Object.assign(Object.assign({}, requestHeaders), wrappedRequestHeaders)), 'RunJob');
         }
     };
 }
@@ -210,6 +224,7 @@ const result = {
             "GitHubRepository"
         ],
         "Integration": [
+            "DatadogIntegration",
             "DiscordIntegration",
             "DiscordWebhookIntegration",
             "SlackIntegration",
@@ -263,27 +278,32 @@ const core = __importStar(__nccwpck_require__(2186));
 const graphql_request_1 = __nccwpck_require__(2476);
 const graphql_1 = __nccwpck_require__(9088);
 function run() {
-    var _a, _b, _c;
+    var _a;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const endpoint = core.getInput('api_url') || 'https://anchor.zeet.co/graphql';
             const token = core.getInput('deploy_key');
             const projectId = core.getInput('project_id');
-            const image = core.getInput('image');
+            const command = core.getInput('command');
+            const build = core.getBooleanInput('build');
             const graphQLClient = new graphql_request_1.GraphQLClient(endpoint, {
                 headers: {
                     authorization: `Bearer ${token}`
                 }
             });
             const sdk = graphql_1.getSdk(graphQLClient);
-            const result = yield sdk.UpdateProject({
+            const result = yield sdk.RunJob({
                 input: {
                     id: projectId,
-                    dockerImage: image
+                    runCommand: command,
+                    build
                 }
             });
+            core.info(`${projectId} job run triggered!`);
+            const link = `https://zeet.co/repo/${projectId}/jobs/${(_a = result === null || result === void 0 ? void 0 : result.runJob) === null || _a === void 0 ? void 0 : _a.id}`;
+            core.info(`Zeet Dashboard: ${link}`);
+            core.setOutput('link', link);
             core.debug(new Date().toTimeString());
-            core.setOutput('link', `https://zeet.co/repo/${(_a = result.updateProject) === null || _a === void 0 ? void 0 : _a.id}/deployments/${(_c = (_b = result === null || result === void 0 ? void 0 : result.updateProject) === null || _b === void 0 ? void 0 : _b.productionDeployment) === null || _c === void 0 ? void 0 : _c.id}`);
         }
         catch (error) {
             core.setFailed(error.message);
@@ -12527,6 +12547,7 @@ var GraphQLInputObjectType = /*#__PURE__*/function () {
         description: field.description,
         type: field.type,
         defaultValue: field.defaultValue,
+        deprecationReason: field.deprecationReason,
         extensions: field.extensions,
         astNode: field.astNode
       };
@@ -23267,7 +23288,7 @@ exports.versionInfo = exports.version = void 0;
 /**
  * A string containing the version of the GraphQL.js library
  */
-var version = '15.5.1';
+var version = '15.6.0';
 /**
  * An object containing the components of the GraphQL.js version string
  */
@@ -23275,8 +23296,8 @@ var version = '15.5.1';
 exports.version = version;
 var versionInfo = Object.freeze({
   major: 15,
-  minor: 5,
-  patch: 1,
+  minor: 6,
+  patch: 0,
   preReleaseTag: null
 });
 exports.versionInfo = versionInfo;
