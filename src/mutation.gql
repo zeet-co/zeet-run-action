@@ -1,0 +1,10 @@
+fragment JobResult on JobRun {
+  id
+}
+
+mutation RunJob($input: RunJobInput!) {
+  runJob(input: $input) {
+    id
+    ...JobResult
+  }
+}

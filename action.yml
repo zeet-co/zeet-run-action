@@ -1,0 +1,25 @@
+name: "Zeet Run"
+description: "Run job on demand with Zeet"
+author: "Zeet"
+inputs:
+  api_url:
+    description: "Zeet API Url"
+    required: false
+  deploy_key:
+    description: "Zeet deploy key"
+    required: true
+  project_id:
+    description: "Zeet project id"
+    required: true
+  command:
+    description: "Command to run"
+    required: false
+  build:
+    description: "Trigger build or use latest image"
+    required: false
+outputs:
+  link:
+    description: "Link to job execution"
+runs:
+  using: "node12"
+  main: "dist/index.js"
