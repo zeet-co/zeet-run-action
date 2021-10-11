@@ -2,9 +2,17 @@
 # yarn lockfile v1
 
 
-"@actions/core@^1.5.0":
-  version "1.5.0"
-  resolved "https://registry.npmjs.org/@actions/core/-/core-1.5.0.tgz"
+"@actions/core@^1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@actions/core/-/core-1.6.0.tgz#0568e47039bfb6a9170393a73f3b7eb3b22462cb"
+  dependencies:
+    "@actions/http-client" "^1.0.11"
+
+"@actions/http-client@^1.0.11":
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/@actions/http-client/-/http-client-1.0.11.tgz#c58b12e9aa8b159ee39e7dd6cbd0e91d905633c0"
+  dependencies:
+    tunnel "0.0.6"
 
 "@ardatan/fetch-event-source@2.0.2":
   version "2.0.2"
@@ -4947,6 +4955,10 @@ tsutils@^3.21.0:
   resolved "https://registry.npmjs.org/tsutils/-/tsutils-3.21.0.tgz"
   dependencies:
     tslib "^1.8.1"
+
+tunnel@0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/tunnel/-/tunnel-0.0.6.tgz#72f1314b34a5b192db012324df2cc587ca47f92c"
 
 type-check@^0.4.0, type-check@~0.4.0:
   version "0.4.0"
