@@ -306,7 +306,9 @@ function run() {
             core.debug(new Date().toTimeString());
         }
         catch (error) {
-            core.setFailed(error.message);
+            if (error instanceof Error) {
+                core.setFailed(error.message);
+            }
         }
     });
 }
