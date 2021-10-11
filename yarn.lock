@@ -496,9 +496,9 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@graphql-codegen/cli@^2.1.1":
-  version "2.1.1"
-  resolved "https://registry.npmjs.org/@graphql-codegen/cli/-/cli-2.1.1.tgz"
+"@graphql-codegen/cli@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/cli/-/cli-2.2.0.tgz#84a909cb46f009cafc59aa719b816494b0ca222b"
   dependencies:
     "@graphql-codegen/core" "2.1.0"
     "@graphql-codegen/plugin-helpers" "^2.1.0"
@@ -508,7 +508,7 @@
     "@graphql-tools/github-loader" "^7.0.5"
     "@graphql-tools/graphql-file-loader" "^7.0.5"
     "@graphql-tools/json-file-loader" "^7.1.2"
-    "@graphql-tools/load" "^7.1.8"
+    "@graphql-tools/load" "^7.3.0"
     "@graphql-tools/prisma-loader" "^7.0.6"
     "@graphql-tools/url-loader" "^7.0.11"
     "@graphql-tools/utils" "^8.1.1"
@@ -728,12 +728,12 @@
     tslib "~2.3.0"
     unixify "^1.0.0"
 
-"@graphql-tools/load@^7.1.0", "@graphql-tools/load@^7.1.8":
-  version "7.1.8"
-  resolved "https://registry.npmjs.org/@graphql-tools/load/-/load-7.1.8.tgz"
+"@graphql-tools/load@^7.1.0", "@graphql-tools/load@^7.3.0":
+  version "7.3.2"
+  resolved "https://registry.yarnpkg.com/@graphql-tools/load/-/load-7.3.2.tgz#0edd9c0b464111968bfca148457a4c97e23fc030"
   dependencies:
-    "@graphql-tools/schema" "8.1.2"
-    "@graphql-tools/utils" "^8.1.1"
+    "@graphql-tools/schema" "8.2.0"
+    "@graphql-tools/utils" "^8.2.3"
     p-limit "3.1.0"
     tslib "~2.3.0"
 
@@ -750,6 +750,13 @@
   resolved "https://registry.npmjs.org/@graphql-tools/merge/-/merge-8.0.2.tgz"
   dependencies:
     "@graphql-tools/utils" "^8.1.1"
+    tslib "~2.3.0"
+
+"@graphql-tools/merge@^8.1.0":
+  version "8.1.2"
+  resolved "https://registry.yarnpkg.com/@graphql-tools/merge/-/merge-8.1.2.tgz#50f5763927c51de764d09c5bfd20261671976e24"
+  dependencies:
+    "@graphql-tools/utils" "^8.2.2"
     tslib "~2.3.0"
 
 "@graphql-tools/optimize@^1.0.1":
@@ -791,7 +798,16 @@
     relay-compiler "11.0.2"
     tslib "~2.3.0"
 
-"@graphql-tools/schema@8.1.2", "@graphql-tools/schema@^8.0.2", "@graphql-tools/schema@^8.1.2":
+"@graphql-tools/schema@8.2.0":
+  version "8.2.0"
+  resolved "https://registry.yarnpkg.com/@graphql-tools/schema/-/schema-8.2.0.tgz#ae75cbb2df6cee9ed6d89fce56be467ab23758dc"
+  dependencies:
+    "@graphql-tools/merge" "^8.1.0"
+    "@graphql-tools/utils" "^8.2.0"
+    tslib "~2.3.0"
+    value-or-promise "1.0.10"
+
+"@graphql-tools/schema@^8.0.2", "@graphql-tools/schema@^8.1.2":
   version "8.1.2"
   resolved "https://registry.npmjs.org/@graphql-tools/schema/-/schema-8.1.2.tgz"
   dependencies:
@@ -838,9 +854,9 @@
   dependencies:
     tslib "~2.3.0"
 
-"@graphql-tools/utils@^8.0.1", "@graphql-tools/utils@^8.1.1":
-  version "8.1.1"
-  resolved "https://registry.npmjs.org/@graphql-tools/utils/-/utils-8.1.1.tgz"
+"@graphql-tools/utils@^8.0.1", "@graphql-tools/utils@^8.1.1", "@graphql-tools/utils@^8.2.0", "@graphql-tools/utils@^8.2.2", "@graphql-tools/utils@^8.2.3":
+  version "8.2.5"
+  resolved "https://registry.yarnpkg.com/@graphql-tools/utils/-/utils-8.2.5.tgz#695e6d760c1187ad2b159d5d3c4696eff9c08a27"
   dependencies:
     tslib "~2.3.0"
 
