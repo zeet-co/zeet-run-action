@@ -1,3 +1,10 @@
-# Zeet Deploy Action
+# Zeet Run Action
 
-use this github action to deploy with Zeet
+use this github action to run job on Zeet
+
+## Params
+
+```
+command: string (optional)
+build: boolean (optional)
+```
