@@ -8,9 +8,12 @@ inputs:
   deploy_key:
     description: "Zeet deploy key"
     required: true
+  project:
+    description: "Zeet project name"
+    required: false
   project_id:
     description: "Zeet project id"
-    required: true
+    required: false
   command:
     description: "Command to run"
     required: false

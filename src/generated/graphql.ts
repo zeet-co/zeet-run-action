@@ -17,6 +17,7 @@ export type Scalars = {
   URL: string;
   UUID: any;
   Upload: any;
+  YAML: any;
 };
 
 export type ApiKey = {
@@ -107,14 +108,34 @@ export type Autoscaling = {
   __typename?: 'Autoscaling';
   minReplicas: Scalars['Int'];
   maxReplicas: Scalars['Int'];
-  cpuTargetUtilization: Scalars['Float'];
+  coolDownPeriod?: Maybe<Scalars['Int']>;
+  triggers?: Maybe<Array<AutoscalingTrigger>>;
 };
 
 export type AutoscalingInput = {
   minReplicas: Scalars['Int'];
   maxReplicas: Scalars['Int'];
-  cpuTargetUtilization: Scalars['Float'];
+  coolDownPeriod?: Maybe<Scalars['Int']>;
+  triggers?: Maybe<Array<AutoscalingTriggerInput>>;
 };
+
+export type AutoscalingTrigger = {
+  __typename?: 'AutoscalingTrigger';
+  type: AutoscalingType;
+  spec: Scalars['YAML'];
+};
+
+export type AutoscalingTriggerInput = {
+  type: AutoscalingType;
+  spec: Scalars['YAML'];
+};
+
+export enum AutoscalingType {
+  Cpu = 'CPU',
+  Memory = 'MEMORY',
+  Prometheus = 'PROMETHEUS',
+  Custom = 'CUSTOM'
+}
 
 export type Build = {
   __typename?: 'Build';
@@ -167,6 +188,7 @@ export enum BuildType {
   Node = 'NODE',
   NodeStatic = 'NODE_STATIC',
   NodeNextjs = 'NODE_NEXTJS',
+  NodeNextjs_14 = 'NODE_NEXTJS_14',
   Ubuntu = 'UBUNTU',
   ElixirPhoenix = 'ELIXIR_PHOENIX',
   GolangModules = 'GOLANG_MODULES',
@@ -978,6 +1000,7 @@ export type MutationAddTeamMemberArgs = {
 export type MutationBuildRepoArgs = {
   id: Scalars['ID'];
   branch?: Maybe<Scalars['String']>;
+  noCache?: Maybe<Scalars['Boolean']>;
 };
 
 
@@ -1394,7 +1417,7 @@ export type Query = {
   dockerRepository?: Maybe<DockerRepository>;
   helmRepository: HelmRepository;
   prices: Prices;
-  repo: Repo;
+  project: Repo;
   searchHelmCharts: HelmChartConnection;
   template: Template;
   user: User;
@@ -1416,8 +1439,9 @@ export type QueryHelmRepositoryArgs = {
 };
 
 
-export type QueryRepoArgs = {
-  id: Scalars['UUID'];
+export type QueryProjectArgs = {
+  id?: Maybe<Scalars['UUID']>;
+  path?: Maybe<Scalars['String']>;
 };
 
 
@@ -1503,6 +1527,8 @@ export type Repo = {
   livenessProbe?: Maybe<Probe>;
   startupProbe?: Maybe<Probe>;
   autoscaling?: Maybe<Autoscaling>;
+  preStopSleep?: Maybe<Scalars['Int']>;
+  terminationGracePeriodSeconds?: Maybe<Scalars['Int']>;
   hostNetwork?: Maybe<Scalars['Boolean']>;
   staticIP?: Maybe<Scalars['Boolean']>;
   deployments?: Maybe<Array<Deployment>>;
@@ -1850,7 +1876,6 @@ export type UpdateProjectInput = {
   livenessProbe?: Maybe<ProbeInput>;
   startupProbe?: Maybe<ProbeInput>;
   autoscaling?: Maybe<AutoscalingInput>;
-  autoscalingDelete?: Maybe<Scalars['Boolean']>;
   preStopSleep?: Maybe<Scalars['Int']>;
   terminationGracePeriodSeconds?: Maybe<Scalars['Int']>;
   prometheusScrape?: Maybe<PrometheusScrapeInput>;
@@ -2033,6 +2058,13 @@ export type Web3Challenge = {
 
 export type JobResultFragment = { __typename?: 'JobRun', id: any, state: JobRunState };
 
+export type GetProjectQueryVariables = Exact<{
+  path: Scalars['String'];
+}>;
+
+
+export type GetProjectQuery = { __typename?: 'Query', project: { __typename?: 'Repo', id: string } };
+
 export type RunJobMutationVariables = Exact<{
   input: RunJobInput;
 }>;
@@ -2052,6 +2084,13 @@ export const JobResultFragmentDoc = gql`
     fragment JobResult on JobRun {
   id
   state
+}
+    `;
+export const GetProjectDocument = gql`
+    query GetProject($path: String!) {
+  project(path: $path) {
+    id
+  }
 }
     `;
 export const RunJobDocument = gql`
@@ -2084,6 +2123,9 @@ const defaultWrapper: SdkFunctionWrapper = (action, _operationName) => action();
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
+    GetProject(variables: GetProjectQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetProjectQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetProjectQuery>(GetProjectDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'GetProject');
+    },
     RunJob(variables: RunJobMutationVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<RunJobMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<RunJobMutation>(RunJobDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'RunJob');
     },

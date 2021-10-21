@@ -3,6 +3,12 @@ fragment JobResult on JobRun {
   state
 }
 
+query GetProject($path: String!) {
+  project(path: $path) {
+    id
+  }
+}
+
 mutation RunJob($input: RunJobInput!) {
   runJob(input: $input) {
     id

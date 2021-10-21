@@ -8,7 +8,8 @@ async function run(): Promise<void> {
       core.getInput('api_url') || 'https://anchor.zeet.co/graphql'
 
     const token = core.getInput('deploy_key')
-    const projectId = core.getInput('project_id')
+    const projectPath = core.getInput('project')
+    let projectId = core.getInput('project_id')
     const command = core.getInput('command')
     const build = core.getBooleanInput('build')
     const wait = core.getBooleanInput('wait')
@@ -20,6 +21,17 @@ async function run(): Promise<void> {
     })
 
     const sdk = getSdk(graphQLClient)
+
+    if (!projectId) {
+      if (!projectPath) {
+        core.error('invalid input, project name or id is required')
+      }
+
+      const p = await sdk.GetProject({
+        path: projectPath
+      })
+      projectId = p.project.id
+    }
 
     const job = await sdk.RunJob({
       input: {

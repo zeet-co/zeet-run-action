@@ -10,7 +10,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getSdk = exports.GetJobDocument = exports.RunJobDocument = exports.JobResultFragmentDoc = exports.UserAction = exports.TeamMemberRole = exports.StripeSubscriptionStatus = exports.RepoSourceType = exports.ProjectCollaboratorRole = exports.PortProtocol = exports.PlanTier = exports.PlanBillingPeriod = exports.LogShipperType = exports.JobRunState = exports.IntegrationType = exports.GithubUserType = exports.GitProvider = exports.GcpAccountState = exports.ErrorCode = exports.DisableReason = exports.DeploymentStatus = exports.DeployTarget = exports.DeployStrategy = exports.ClusterState = exports.ClusterProvider = exports.CloudProvider = exports.BuildType = exports.BuildState = exports.AwsAccountState = void 0;
+exports.getSdk = exports.GetJobDocument = exports.RunJobDocument = exports.GetProjectDocument = exports.JobResultFragmentDoc = exports.UserAction = exports.TeamMemberRole = exports.StripeSubscriptionStatus = exports.RepoSourceType = exports.ProjectCollaboratorRole = exports.PortProtocol = exports.PlanTier = exports.PlanBillingPeriod = exports.LogShipperType = exports.JobRunState = exports.IntegrationType = exports.GithubUserType = exports.GitProvider = exports.GcpAccountState = exports.ErrorCode = exports.DisableReason = exports.DeploymentStatus = exports.DeployTarget = exports.DeployStrategy = exports.ClusterState = exports.ClusterProvider = exports.CloudProvider = exports.BuildType = exports.BuildState = exports.AutoscalingType = exports.AwsAccountState = void 0;
 const graphql_tag_1 = __importDefault(__nccwpck_require__(8435));
 var AwsAccountState;
 (function (AwsAccountState) {
@@ -18,6 +18,13 @@ var AwsAccountState;
     AwsAccountState["Success"] = "SUCCESS";
     AwsAccountState["Error"] = "ERROR";
 })(AwsAccountState = exports.AwsAccountState || (exports.AwsAccountState = {}));
+var AutoscalingType;
+(function (AutoscalingType) {
+    AutoscalingType["Cpu"] = "CPU";
+    AutoscalingType["Memory"] = "MEMORY";
+    AutoscalingType["Prometheus"] = "PROMETHEUS";
+    AutoscalingType["Custom"] = "CUSTOM";
+})(AutoscalingType = exports.AutoscalingType || (exports.AutoscalingType = {}));
 var BuildState;
 (function (BuildState) {
     BuildState["BuildStarting"] = "BUILD_STARTING";
@@ -34,6 +41,7 @@ var BuildType;
     BuildType["Node"] = "NODE";
     BuildType["NodeStatic"] = "NODE_STATIC";
     BuildType["NodeNextjs"] = "NODE_NEXTJS";
+    BuildType["NodeNextjs_14"] = "NODE_NEXTJS_14";
     BuildType["Ubuntu"] = "UBUNTU";
     BuildType["ElixirPhoenix"] = "ELIXIR_PHOENIX";
     BuildType["GolangModules"] = "GOLANG_MODULES";
@@ -198,6 +206,13 @@ exports.JobResultFragmentDoc = graphql_tag_1.default `
   state
 }
     `;
+exports.GetProjectDocument = graphql_tag_1.default `
+    query GetProject($path: String!) {
+  project(path: $path) {
+    id
+  }
+}
+    `;
 exports.RunJobDocument = graphql_tag_1.default `
     mutation RunJob($input: RunJobInput!) {
   runJob(input: $input) {
@@ -223,6 +238,9 @@ exports.GetJobDocument = graphql_tag_1.default `
 const defaultWrapper = (action, _operationName) => action();
 function getSdk(client, withWrapper = defaultWrapper) {
     return {
+        GetProject(variables, requestHeaders) {
+            return withWrapper((wrappedRequestHeaders) => client.request(exports.GetProjectDocument, variables, Object.assign(Object.assign({}, requestHeaders), wrappedRequestHeaders)), 'GetProject');
+        },
         RunJob(variables, requestHeaders) {
             return withWrapper((wrappedRequestHeaders) => client.request(exports.RunJobDocument, variables, Object.assign(Object.assign({}, requestHeaders), wrappedRequestHeaders)), 'RunJob');
         },
@@ -301,7 +319,8 @@ function run() {
         try {
             const endpoint = core.getInput('api_url') || 'https://anchor.zeet.co/graphql';
             const token = core.getInput('deploy_key');
-            const projectId = core.getInput('project_id');
+            const projectPath = core.getInput('project');
+            let projectId = core.getInput('project_id');
             const command = core.getInput('command');
             const build = core.getBooleanInput('build');
             const wait = core.getBooleanInput('wait');
@@ -311,6 +330,15 @@ function run() {
                 }
             });
             const sdk = graphql_1.getSdk(graphQLClient);
+            if (!projectId) {
+                if (!projectPath) {
+                    core.error('invalid input, project name or id is required');
+                }
+                const p = yield sdk.GetProject({
+                    path: projectPath
+                });
+                projectId = p.project.id;
+            }
             const job = yield sdk.RunJob({
                 input: {
                     id: projectId,
