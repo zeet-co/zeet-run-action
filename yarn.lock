@@ -2711,9 +2711,9 @@ graphql-ws@^5.0.0:
   version "5.3.0"
   resolved "https://registry.npmjs.org/graphql-ws/-/graphql-ws-5.3.0.tgz"
 
-graphql@^15.6.0:
-  version "15.6.0"
-  resolved "https://registry.yarnpkg.com/graphql/-/graphql-15.6.0.tgz#e69323c6a9780a1a4b9ddf7e35ca8904bb04df02"
+graphql@^15.6.1:
+  version "15.6.1"
+  resolved "https://registry.yarnpkg.com/graphql/-/graphql-15.6.1.tgz#9125bdf057553525da251e19e96dab3d3855ddfc"
 
 has-ansi@^2.0.0:
   version "2.0.0"
