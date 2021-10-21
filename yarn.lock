@@ -602,12 +602,12 @@
     auto-bind "~4.0.0"
     tslib "~2.3.0"
 
-"@graphql-codegen/typescript@^2.1.0", "@graphql-codegen/typescript@^2.2.1":
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/@graphql-codegen/typescript/-/typescript-2.2.1.tgz#5655feba721a6b9eb587d40a522dcd729b6a1e51"
+"@graphql-codegen/typescript@^2.1.0", "@graphql-codegen/typescript@^2.2.2":
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/typescript/-/typescript-2.2.2.tgz#8ea14c0a7853f6b73cca0ed10ff43b6dbd3731c6"
   dependencies:
     "@graphql-codegen/plugin-helpers" "^2.1.1"
-    "@graphql-codegen/visitor-plugin-common" "2.2.0"
+    "@graphql-codegen/visitor-plugin-common" "2.2.1"
     auto-bind "~4.0.0"
     tslib "~2.3.0"
 
@@ -634,6 +634,21 @@
     "@graphql-tools/optimize" "^1.0.1"
     "@graphql-tools/relay-operation-optimizer" "^6.3.7"
     "@graphql-tools/utils" "8.2.1"
+    auto-bind "~4.0.0"
+    change-case-all "1.0.14"
+    dependency-graph "^0.11.0"
+    graphql-tag "^2.11.0"
+    parse-filepath "^1.0.2"
+    tslib "~2.3.0"
+
+"@graphql-codegen/visitor-plugin-common@2.2.1":
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/visitor-plugin-common/-/visitor-plugin-common-2.2.1.tgz#721b646d3d19ec0fcf9509f516e788b7151be003"
+  dependencies:
+    "@graphql-codegen/plugin-helpers" "^2.1.1"
+    "@graphql-tools/optimize" "^1.0.1"
+    "@graphql-tools/relay-operation-optimizer" "^6.3.7"
+    "@graphql-tools/utils" "8.2.2"
     auto-bind "~4.0.0"
     change-case-all "1.0.14"
     dependency-graph "^0.11.0"
@@ -843,6 +858,12 @@
 "@graphql-tools/utils@8.2.1":
   version "8.2.1"
   resolved "https://registry.yarnpkg.com/@graphql-tools/utils/-/utils-8.2.1.tgz#381e79fa04041f91f132d252216adcb3970e3c1e"
+  dependencies:
+    tslib "~2.3.0"
+
+"@graphql-tools/utils@8.2.2":
+  version "8.2.2"
+  resolved "https://registry.yarnpkg.com/@graphql-tools/utils/-/utils-8.2.2.tgz#d29420bf1003d2876cb30f373145be432c7f7c4b"
   dependencies:
     tslib "~2.3.0"
 
