@@ -27,7 +27,7 @@
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.6.0",
-    "graphql": "^15.6.0",
+    "graphql": "^15.7.2",
     "graphql-request": "^3.5.0"
   },
   "devDependencies": {
