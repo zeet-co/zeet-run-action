@@ -28,7 +28,7 @@
   "dependencies": {
     "@actions/core": "^1.6.0",
     "graphql": "^15.6.0",
-    "graphql-request": "^3.5.0"
+    "graphql-request": "^3.6.1"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^2.1.1",
