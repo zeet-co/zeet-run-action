@@ -30,7 +30,7 @@ async function run(): Promise<void> {
       const p = await sdk.GetProject({
         path: projectPath
       })
-      projectId = p.project.id
+      projectId = p.project?.id
     }
 
     const job = await sdk.RunJob({
