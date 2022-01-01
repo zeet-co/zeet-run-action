@@ -2693,9 +2693,9 @@ graphql-config@^4.0.1:
     minimatch "3.0.4"
     string-env-interpolation "1.0.1"
 
-graphql-request@^3.3.0, graphql-request@^3.5.0:
-  version "3.5.0"
-  resolved "https://registry.npmjs.org/graphql-request/-/graphql-request-3.5.0.tgz"
+graphql-request@^3.3.0, graphql-request@^3.7.0:
+  version "3.7.0"
+  resolved "https://registry.yarnpkg.com/graphql-request/-/graphql-request-3.7.0.tgz#c7406e537084f8b9788541e3e6704340ca13055b"
   dependencies:
     cross-fetch "^3.0.6"
     extract-files "^9.0.0"
