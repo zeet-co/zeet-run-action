@@ -5,7 +5,8 @@ async function run() {
   const out = await exec.getExecOutput('zeet job:run', [
     core.getInput('project') || core.getInput('project_id'),
     `--build=${core.getInput('build')}`,
-    `--wait=${core.getBooleanInput('wait')}`
+    `--wait=${core.getBooleanInput('wait')}`,
+    `--cmd=${core.getInput('command')}`
   ])
 
   const links = out.stdout.match('(https?:\\/\\/zeet\\.co\\/repo[^\\s]+)')
