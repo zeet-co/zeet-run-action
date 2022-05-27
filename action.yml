@@ -16,16 +16,43 @@ inputs:
     required: false
   command:
     description: "Command to run"
-    required: false
+    required: true
   build:
     description: "Trigger build or use latest image"
     required: false
+    default: "false"
   wait:
     description: "Wait till the run finishes"
     required: false
+    default: "false"
 outputs:
   link:
+    value: ${{ steps.main.outputs.link }}
     description: "Link to job execution"
 runs:
-  using: "node12"
-  main: "dist/index.js"
+  using: 'composite'
+  steps:
+    - uses: actions/checkout@v3
+      with:
+        repository: zeet-co/zeet-run-action
+        ref: v2
+    - uses: zeet-dev/action-zeet@main
+      with:
+        token: ${{ inputs.deploy_key }}
+        api_url: ${{ inputs.api_url }}
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 16
+    - run: npm ci
+      shell: bash
+    - id: main
+      run: node dist/index.js
+      shell: bash
+      env:
+        INPUT_API_URL: ${{ inputs.api_url}}
+        INPUT_DEPLOY_KEY: ${{ inputs.deploy_key }}
+        INPUT_PROJECT: ${{ inputs.project }}
+        INPUT_PROJECT_ID: ${{ inputs.project_id }}
+        INPUT_COMMAND: ${{ inputs.command }}
+        INPUT_BUILD: ${{ inputs.build }}
+        INPUT_WAIT: ${{ inputs.wait }}
