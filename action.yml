@@ -4,6 +4,7 @@ author: "Zeet"
 inputs:
   api_url:
     description: "Zeet API Url"
+    default: ""
     required: false
   deploy_key:
     description: "Zeet deploy key"
