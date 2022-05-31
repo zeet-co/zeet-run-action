@@ -39,7 +39,7 @@ runs:
     - uses: zeet-dev/action-zeet@main
       with:
         token: ${{ inputs.deploy_key }}
-        api_url: ${{ inputs.api_url }}
+#        api_url: ${{ inputs.api_url }}
     - uses: actions/setup-node@v3
       with:
         node-version: 16
