@@ -34,9 +34,9 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         const out = yield exec.getExecOutput('zeet job:run', [
             core.getInput('project') || core.getInput('project_id'),
+            core.getInput("command"),
             `--build=${core.getInput('build')}`,
             `--follow=${core.getBooleanInput('wait')}`,
-            `--cmd=${core.getInput('command')}`
         ]);
         const links = out.stdout.match('(https?:\\/\\/zeet\\.co\\/repo[^\\s]+)');
         core.setOutput('link', links ? links[0] : 'Not Found');
