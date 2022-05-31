@@ -4,7 +4,7 @@ author: "Zeet"
 inputs:
   api_url:
     description: "Zeet API Url"
-    default: ""
+    default: "https://anchor.zeet.co"
     required: false
   deploy_key:
     description: "Zeet deploy key"
@@ -50,8 +50,6 @@ runs:
       run: node dist/index.js
       shell: bash
       env:
-        INPUT_API_URL: ${{ inputs.api_url}}
-        INPUT_DEPLOY_KEY: ${{ inputs.deploy_key }}
         INPUT_PROJECT: ${{ inputs.project }}
         INPUT_PROJECT_ID: ${{ inputs.project_id }}
         INPUT_COMMAND: ${{ inputs.command }}
