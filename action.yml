@@ -17,7 +17,7 @@ inputs:
     required: false
   command:
     description: "Command to run"
-    required: true
+    required: false
   build:
     description: "Trigger build or use latest image"
     required: false

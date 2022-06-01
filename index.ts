@@ -11,7 +11,7 @@ async function run() {
 {failOnStdErr: true}
   )
 
-  const links = out.stdout.match('(https?:\\/\\/zeet\\.co\\/repo[^\\s]+)')
+  const links = out.stdout.match(/https?:\/\/zeet\.co\/repo[^\s]+/)
   core.setOutput('link', links ? links[0] : 'Not Found')
 }
 
