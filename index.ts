@@ -7,7 +7,9 @@ async function run() {
     core.getInput("command"),
     `--build=${core.getInput('build')}`,
     `--follow=${core.getBooleanInput('wait')}`,
-  ])
+  ],
+{failOnStdErr: true}
+  )
 
   const links = out.stdout.match('(https?:\\/\\/zeet\\.co\\/repo[^\\s]+)')
   core.setOutput('link', links ? links[0] : 'Not Found')
