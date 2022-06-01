@@ -1,12 +1,11 @@
 # Zeet Run Action
 
-Use this Github Action to run a Job on Zeet.
+Use this Github Action to run a Job on [Zeet](https://zeet.co).
 
 ## Example
 ```yaml
     steps:
       - name: Run command
-        id: run
         uses: zeet-co/zeet-run-action@v2
         with:
           deploy_key: ${{ secrets.ZEET_TOKEN }}
