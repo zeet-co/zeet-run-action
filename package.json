@@ -8,7 +8,7 @@
     "build": "tsc",
     "format": "prettier --write **/*.ts",
     "format-check": "prettier --check **/*.ts",
-    "lint": "eslint src/**/*.ts",
+    "lint": "eslint ./index.ts",
     "package": "ncc build --source-map --license licenses.txt",
     "test": "jest",
     "gen": "graphql-codegen --config codegen.yml",
@@ -26,14 +26,16 @@
   "author": "Zeet",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.6.0",
+    "@actions/core": "^1.8.2",
+    "@actions/exec": "^1.1.1",
+    "action-utils": "github:zeet-dev/action-utils",
     "graphql": "^15.6.0",
     "graphql-request": "^3.7.0"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^2.1.1",
-    "@graphql-codegen/typescript": "^2.2.2",
     "@graphql-codegen/fragment-matcher": "^3.1.0",
+    "@graphql-codegen/typescript": "^2.2.2",
     "@graphql-codegen/typescript-graphql-files-modules": "^2.1.0",
     "@graphql-codegen/typescript-graphql-request": "^4.1.3",
     "@graphql-codegen/typescript-operations": "^2.1.0",
