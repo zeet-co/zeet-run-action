@@ -6,7 +6,7 @@ Use this Github Action to run a Job on [Zeet](https://zeet.co).
 ```yaml
     steps:
       - name: Run command
-        uses: zeet-co/zeet-run-action@v2
+        uses: zeet-co/zeet-run-action@v1
         with:
           deploy_key: ${{ secrets.ZEET_TOKEN }}
           project: zeet-demo/zeet-demo-node
