@@ -26,7 +26,7 @@
   "author": "Zeet",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.8.2",
+    "@actions/core": "^1.9.1",
     "@actions/exec": "^1.1.1",
     "action-utils": "github:zeet-dev/action-utils",
     "graphql": "^15.6.0",
